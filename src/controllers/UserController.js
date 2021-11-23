@@ -2,6 +2,7 @@ const path = require("path");
 const User = require(path.join(__dirname, "..", "models", "User.js"));
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
+const createUserToken = require(path.join(__dirname, '..', 'helpers', 'create-user-token.js'))
 
 module.exports = class UserController {
   static async findUserByEmail(email){
@@ -34,16 +35,14 @@ module.exports = class UserController {
       });
       const returnUser = {
         id: newUser["id"],
-        name: newUser["name"],
-        email: newUser["email"],
-        phone: newUser["phone"],
+        email: newUser["email"]
       };
-      res.status(201).json({ message: "User created!", returnUser });
+      await createUserToken(returnUser, req, res)
     } catch (error) {
       console.log(error);
       res.status(500).json({ error: "Internal error when creating User" });
       return;
     }
   }
-  
+
 };
