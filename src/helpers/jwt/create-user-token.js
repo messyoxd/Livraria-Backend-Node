@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 const path = require('path')
-const jwtSecret = require(path.join(__dirname, '..', 'config', 'jwtSecret.json'))
+const jwtSecret = require(path.join(__dirname, '..', '..', 'config', 'jwtSecret.json'))
 
 const createUserToken = async (user, req, res) => {
 

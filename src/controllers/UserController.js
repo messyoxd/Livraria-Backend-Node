@@ -1,12 +1,58 @@
 const path = require("path");
+
+// model
 const User = require(path.join(__dirname, "..", "models", "User.js"));
+
+// field validation
 const { validationResult } = require("express-validator");
+
+// cryptography
 const bcrypt = require("bcrypt");
-const createUserToken = require(path.join(__dirname, '..', 'helpers', 'create-user-token.js'))
+
+// jwt
+const jwt = require("jsonwebtoken");
+const jwtSecret = require(path.join(
+  __dirname,
+  "..",
+  "config",
+  "jwtSecret.json"
+));
+
+// Helpers
+const createUserToken = require(path.join(
+  __dirname,
+  "..",
+  "helpers",
+  "jwt",
+  "create-user-token.js"
+));
+const getToken = require(path.join(
+  __dirname,
+  "..",
+  "helpers",
+  "jwt",
+  "get-token.js"
+));
 
 module.exports = class UserController {
-  static async findUserByEmail(email){
-      return await User.findOne({ email: email })
+  static async findUserByEmail(email) {
+    return await User.findOne({ email: email });
+  }
+
+  static async checkUser(req, res) {
+    let currentUser;
+    if (req.headers.authorization) {
+      const token = getToken(req);
+      const decoded = jwt.verify(token, jwtSecret["secret"]);
+      currentUser = await User.findOne({
+        raw: true,
+        where: { id: decoded.id },
+      });
+      currentUser.password = undefined;
+    } else {
+      currentUser = null;
+    }
+    res.status(200).send(currentUser);
   }
 
   static async login(req, res) {
@@ -16,19 +62,19 @@ module.exports = class UserController {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { email, password } = req.body
+    const { email, password } = req.body;
 
-    const user = await User.findOne({email: email})
+    const user = await User.findOne({ email: email });
 
     // check password
-    const checkPassword = await bcrypt.compare(password, user.password)
+    const checkPassword = await bcrypt.compare(password, user.password);
 
-    if(!checkPassword){
+    if (!checkPassword) {
       res.status(422).json({
-        errors: "Invalid password!"
-      })
-    }else{
-      await createUserToken(user, req, res)
+        errors: "Invalid password!",
+      });
+    } else {
+      await createUserToken(user, req, res);
     }
   }
 
@@ -50,24 +96,21 @@ module.exports = class UserController {
 
     try {
       const newUser = await User.create({
-          name: name,
-          email: email,
-          phone: phone,
-          password: passwordHash,
-          admin: false
+        name: name,
+        email: email,
+        phone: phone,
+        password: passwordHash,
+        admin: false,
       });
       const returnUser = {
         id: newUser["id"],
-        email: newUser["email"]
+        email: newUser["email"],
       };
-      await createUserToken(returnUser, req, res)
+      await createUserToken(returnUser, req, res);
     } catch (error) {
       console.log(error);
       res.status(500).json({ error: "Internal error when creating User" });
       return;
     }
   }
-
-  
-
 };

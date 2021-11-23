@@ -14,7 +14,7 @@ const {
   passwordValidation,
 } = require(path.join(__dirname, "..", "helpers", "validators"));
 
-// CRUD
+// Create User
 router.post(
   "/create-user",
   basicValidation("name"),
@@ -37,10 +37,6 @@ router.post(
     .withMessage("Must match with field password!"),
   UserController.createUser
 );
-// router.post('/get-user', UserController.getUserById)
-// router.post('/edit-user', UserController.editUser)
-// router.post('/delete-user', UserController.deleteUser)
-
 // login
 router.post(
   "/login",
@@ -57,5 +53,11 @@ router.post(
   basicValidation("password"),
   UserController.login
 );
+// check user
+router.get('/check-user', UserController.checkUser)
+// router.post('/get-user', UserController.getUserById)
+// router.post('/edit-user', UserController.editUser)
+// router.post('/delete-user', UserController.deleteUser)
+
 
 module.exports = router;
