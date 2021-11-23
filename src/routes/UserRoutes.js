@@ -8,18 +8,18 @@ const UserController = require(path.join(
   "UserController.js"
 ));
 // const { body, check } = require("express-validator");
-const { basicValidation, emailValidation, passwordValidation } = require(path.join(
-  __dirname,
-  "..",
-  "helpers",
-  "validators"
-));
+const {
+  basicValidation,
+  emailValidation,
+  passwordValidation,
+} = require(path.join(__dirname, "..", "helpers", "validators"));
 
 // CRUD
 router.post(
   "/create-user",
   basicValidation("name"),
   emailValidation("email")
+    .normalizeEmail()
     .bail()
     .custom(async (value) => {
       const user = await UserController.findUserByEmail(value);
@@ -42,11 +42,20 @@ router.post(
 // router.post('/delete-user', UserController.deleteUser)
 
 // login
-// router.post(
-//   '/login',
-//   check('email'),
-//   check('password'),
-//   UserController.login
-// )
+router.post(
+  "/login",
+  emailValidation("email")
+  .bail()
+  .custom(async (value) => {
+    const user = await UserController.findUserByEmail(value);
+    if (user === null) {
+      throw new Error("Account not found!");
+    } else {
+      return true;
+    }
+  }),
+  basicValidation("password"),
+  UserController.login
+);
 
 module.exports = router;

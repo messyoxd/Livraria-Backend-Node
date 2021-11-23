@@ -9,6 +9,29 @@ module.exports = class UserController {
       return await User.findOne({ email: email })
   }
 
+  static async login(req, res) {
+    // validations
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { email, password } = req.body
+
+    const user = await User.findOne({email: email})
+
+    // check password
+    const checkPassword = await bcrypt.compare(password, user.password)
+
+    if(!checkPassword){
+      res.status(422).json({
+        errors: "Invalid password!"
+      })
+    }else{
+      await createUserToken(user, req, res)
+    }
+  }
+
   static async createUser(req, res) {
     // validations
 
@@ -45,8 +68,6 @@ module.exports = class UserController {
     }
   }
 
-  // static async login(req, res) {
-
-  // }
+  
 
 };
