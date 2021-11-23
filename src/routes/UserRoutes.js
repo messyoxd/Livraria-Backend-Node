@@ -7,30 +7,19 @@ const UserController = require(path.join(
   "controllers",
   "UserController.js"
 ));
-const { body, check } = require("express-validator");
+// const { body, check } = require("express-validator");
+const { basicValidation, emailValidation, passwordValidation } = require(path.join(
+  __dirname,
+  "..",
+  "helpers",
+  "validators"
+));
 
 // CRUD
 router.post(
   "/create-user",
-  check("name")
-    .exists()
-    .withMessage("Field name is required!")
-    .bail()
-    .not()
-    .isEmpty()
-    .withMessage("Must not be blank!"),
-
-  check("email")
-    .exists()
-    .withMessage("Field email is required!")
-    .bail()
-    .not()
-    .isEmpty()
-    .withMessage("Must not be blank!")
-    .bail()
-    .normalizeEmail()
-    .isEmail()
-    .withMessage("Must be a valid address!")
+  basicValidation("name"),
+  emailValidation("email")
     .bail()
     .custom(async (value) => {
       const user = await UserController.findUserByEmail(value);
@@ -40,44 +29,24 @@ router.post(
         throw new Error("Email already registered!");
       }
     }),
-
-  check("phone")
-    .exists()
-    .withMessage("Field phone is required!")
-    .bail()
-    .not()
-    .isEmpty()
-    .withMessage("Must not be blank!"),
-
-  check("password")
-    .exists()
-    .withMessage("Field password is required!")
-    .bail()
-    .not()
-    .isEmpty()
-    .withMessage("Must not be blank!")
-    .bail()
-    .isLength({ min: 5 })
-    .withMessage("Must have at least 5 characters!")
-    .bail()
-    .isLength({ max: 50 })
-    .withMessage("Must not have more than 50 characters!"),
-
-  check("confirmpassword")
-    .exists()
-    .withMessage("Field confirmpassword is required!")
-    .bail()
-    .not()
-    .isEmpty()
-    .withMessage("Must not be blank!")
+  basicValidation("phone"),
+  passwordValidation("password", 5, 50),
+  basicValidation("confirmpassword")
     .bail()
     .custom((value, { req }) => value === req.body.password)
     .withMessage("Must match with field password!"),
-
   UserController.createUser
 );
 // router.post('/get-user', UserController.getUserById)
 // router.post('/edit-user', UserController.editUser)
 // router.post('/delete-user', UserController.deleteUser)
+
+// login
+// router.post(
+//   '/login',
+//   check('email'),
+//   check('password'),
+//   UserController.login
+// )
 
 module.exports = router;
