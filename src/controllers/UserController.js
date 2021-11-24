@@ -39,6 +39,27 @@ module.exports = class UserController {
     return await User.findOne({ email: email });
   }
 
+  static async getUserById(req, res){
+
+    const id = req.params.id
+
+    const user = await User.findOne({raw: true, where: {id : id}})
+
+    if(user != null){
+      res.status(200).json({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        admin: user.admin == 0 ? false : true
+      })
+    }else{
+      res.status(422).json({message: `User with id "${id}" not found!`})
+    }
+
+
+  }
+
   static async checkUser(req, res) {
     let currentUser;
     if (req.headers.authorization) {

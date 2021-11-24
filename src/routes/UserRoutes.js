@@ -55,7 +55,8 @@ router.post(
 );
 // check user
 router.get('/check-user', UserController.checkUser)
-// router.post('/get-user', UserController.getUserById)
+// get user by id
+router.get('/:id', UserController.getUserById)
 // router.post('/edit-user', UserController.editUser)
 // router.post('/delete-user', UserController.deleteUser)
 
