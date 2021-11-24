@@ -7,12 +7,21 @@ const UserController = require(path.join(
   "controllers",
   "UserController.js"
 ));
-// const { body, check } = require("express-validator");
+
+// middlewares
+
+const verifyToken = require(path.join(__dirname, '..', 'helpers', 'jwt', 'verify-token.js'))
+
+// validators
+
 const {
   basicValidation,
   emailValidation,
   passwordValidation,
 } = require(path.join(__dirname, "..", "helpers", "validators"));
+
+// routes
+
 
 // Create User
 router.post(
@@ -57,7 +66,8 @@ router.post(
 router.get('/check-user', UserController.checkUser)
 // get user by id
 router.get('/:id', UserController.getUserById)
-// router.post('/edit-user', UserController.editUser)
+// update user
+router.patch('/edit/:id', verifyToken, UserController.editUser)
 // router.post('/delete-user', UserController.deleteUser)
 
 

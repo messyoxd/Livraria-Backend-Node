@@ -16,7 +16,7 @@ const jwtSecret = require(path.join(
   "..",
   "config",
   "jwtSecret.json"
-));
+))['secret'];
 
 // Helpers
 const createUserToken = require(path.join(
@@ -37,6 +37,10 @@ const getToken = require(path.join(
 module.exports = class UserController {
   static async findUserByEmail(email) {
     return await User.findOne({ email: email });
+  }
+
+  static async editUser(req, res){
+    res.status(200).json({message: "User updated successfully"})
   }
 
   static async getUserById(req, res){
@@ -64,7 +68,7 @@ module.exports = class UserController {
     let currentUser;
     if (req.headers.authorization) {
       const token = getToken(req);
-      const decoded = jwt.verify(token, jwtSecret["secret"]);
+      const decoded = jwt.verify(token, jwtSecret);
       currentUser = await User.findOne({
         raw: true,
         where: { id: decoded.id },
