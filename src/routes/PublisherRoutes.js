@@ -53,4 +53,11 @@ router.get(
   PublisherController.getPublisherByID
 )
 
+// get all publishers
+router.get(
+  "/",
+  verifyToken,
+  PublisherController.getAllPublishers
+)
+
 module.exports = router;

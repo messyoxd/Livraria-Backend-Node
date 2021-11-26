@@ -7,6 +7,11 @@ const { Publisher } = require(path.join(__dirname, "..", "models", "index.js"));
 const { validationResult } = require("express-validator");
 
 module.exports = class PublisherController {
+    static async getAllPublishers(req, res){
+        return res.status(200).json(
+            await Publisher.findAll()
+        )
+    }
     static async getPublisherByID(req, res) {
         const id = req.params.id;
 
