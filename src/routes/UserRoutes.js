@@ -18,6 +18,13 @@ const verifyToken = require(path.join(
   "verify-token.js"
 ));
 
+const checkAccessLevel = require(path.join(
+  __dirname,
+  "..",
+  "helpers",
+  "check-access-level.js"
+));
+
 // validators
 const { check } = require("express-validator");
 const {
@@ -69,7 +76,7 @@ router.post(
   UserController.login
 );
 // check user
-router.get("/check-user", verifyToken, UserController.checkUser);
+router.get("/check", verifyToken, UserController.checkUser);
 // get user by id
 router.get("/:id", verifyToken, UserController.getUserById);
 // update user
@@ -96,6 +103,11 @@ router.patch(
     .withMessage("Must match with field password!"),
   UserController.editUser
 );
-// router.post('/delete-user', UserController.deleteUser)
+router.delete(
+  "/delete/:id",
+  verifyToken,
+  checkAccessLevel,
+  UserController.deleteUserById
+);
 
 module.exports = router;

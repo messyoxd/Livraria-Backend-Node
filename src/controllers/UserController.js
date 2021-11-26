@@ -50,8 +50,18 @@ module.exports = class UserController {
     return await User.findOne({ raw: true, where: { id: id } });
   }
 
-  static async editUser(req, res) {
+  static async deleteUserById(req, res) {
+    const id = req.params.id;
 
+    try {
+      await User.destroy({ where: { id: id } });
+      res.status(200).json({ message: `User '${id}' deleted successfully!` });
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  static async editUser(req, res) {
     // validations
 
     const errors = validationResult(req);
@@ -80,8 +90,8 @@ module.exports = class UserController {
 
     let image = "";
     // check if current password is equal to the one in the body
-    let checkPassword = false
-    let passwordHash = ""
+    let checkPassword = false;
+    let passwordHash = "";
     if (password != undefined) {
       console.log(password);
       const salt = await bcrypt.genSalt(12);
@@ -147,7 +157,7 @@ module.exports = class UserController {
         admin: user.admin,
       });
     } else {
-      res.status(422).json({ message: `User with id "${id}" not found!` });
+      res.status(422).json({ message: `User with id '${id}' not found!` });
     }
   }
 
@@ -160,6 +170,8 @@ module.exports = class UserController {
         raw: true,
         where: { id: decoded.id },
       });
+      if(!currentUser)
+        return res.status(422).json({message: "User not found!"});
       currentUser.password = undefined;
     } else {
       currentUser = null;
