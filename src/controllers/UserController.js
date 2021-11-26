@@ -55,6 +55,10 @@ module.exports = class UserController {
       return res.status(400).json({ errors: errors.array() });
     }
 
+    console.log(req.body);
+    if(!Object.keys(req.body).length)
+      return res.status(400).json({message: "Nothing was sent to update!"})
+
     // get user by the token
     const user = await getUserByToken(getToken(req));
 
