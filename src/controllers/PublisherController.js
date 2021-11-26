@@ -7,15 +7,50 @@ const { Publisher } = require(path.join(__dirname, "..", "models", "index.js"));
 const { validationResult } = require("express-validator");
 
 module.exports = class PublisherController {
-    static async getAllPublishers(req, res){
-        return res.status(200).json(
-            await Publisher.findAll()
-        )
+    static async editPublisher(req, res) {
+        // validations
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        if (!Object.keys(req.body).length)
+            return res
+                .status(400)
+                .json({ message: "Nothing was sent to update!" });
+
+        const id = req.params.id;
+        const publisher = PublisherController.findUserByID(id);
+        if (!publisher)
+            return res.status(422).json({
+                message: `Publisher with id '${id}' not found!`,
+            });
+
+        const { name, city } = req.body;
+
+        const editedPublisher = {
+            name: name === undefined ? publisher.name : name,
+            city: city === city ? publisher.city : city,
+        };
+
+        await Publisher.update(editedPublisher, { where: { id: id } });
+
+        res.status(200).json({message: `Publisher successfully updated!`})
     }
+
+    static async getAllPublishers(req, res) {
+        return res.status(200).json(await Publisher.findAll());
+    }
+
+    static async findUserByID(id) {
+        return await Publisher.findOne({ raw: true, where: { id: id } });
+    }
+
     static async getPublisherByID(req, res) {
         const id = req.params.id;
 
-        const publisher = await Publisher.findOne({ raw: true, where: { id: id } });
+        const publisher = await PublisherController.findUserByID(id);
         if (!publisher)
             return res.status(422).json({
                 message: `Publisher with id '${id}' not found!`,
