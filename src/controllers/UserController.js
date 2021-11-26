@@ -16,7 +16,7 @@ const jwtSecret = require(path.join(
   "..",
   "config",
   "jwtSecret.json"
-))['secret'];
+))["secret"];
 
 // Helpers
 const createUserToken = require(path.join(
@@ -33,35 +33,120 @@ const getToken = require(path.join(
   "jwt",
   "get-token.js"
 ));
+const getUserByToken = require(path.join(
+  __dirname,
+  "..",
+  "helpers",
+  "jwt",
+  "get-user-by-token.js"
+));
 
 module.exports = class UserController {
   static async findUserByEmail(email) {
-    return await User.findOne({ email: email });
+    return await User.findOne({ raw: true, email: email });
   }
 
-  static async editUser(req, res){
-    res.status(200).json({message: "User updated successfully"})
+  static async findUserById(id) {
+    return await User.findOne({ raw: true, where: { id: id } });
   }
 
-  static async getUserById(req, res){
+  static async editUser(req, res) {
 
-    const id = req.params.id
+    // validations
 
-    const user = await User.findOne({raw: true, where: {id : id}})
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-    if(user != null){
+    // get user by the token
+    const user = await getUserByToken(getToken(req));
+
+    if (!user) {
+      return res.status(422).json({ message: `User not found!` });
+    }
+
+    // check if sent email is already registered
+    const email = req.body.email;
+    if (email != undefined) {
+      const userExistsByEmail = findUserByEmail(req.body);
+      if (!userExistsByEmail)
+        return res.status(422).json({
+          message: `User with email "${email}" is already registered!`,
+        });
+    }
+
+    const { name, phone, password } = req.body;
+
+    let image = "";
+
+    // check if current password is equal to the one in the body
+    if (password != undefined) {
+      const salt = await bcrypt.genSalt(12);
+      const passwordHash = await bcrypt.hash(password, salt);
+      const checkPassword = await bcrypt.compare(password, user.password);
+      if (checkPassword)
+        return res.status(422).json({
+          message: `Field password was sent but has the same value as before!`,
+        });
+    }
+
+    // create user object with only altered data
+    const updatedUser = {
+      id: user.id,
+      name: name != undefined && name != "" ? name : user.name,
+      email:
+        email != undefined && email != "" && email !== user.email
+          ? email
+          : user.email,
+      phone:
+        phone != undefined && phone != "" && phone !== user.phone
+          ? phone
+          : user.phone,
+      password:
+        password != undefined && !checkPassword ? passwordHash : user.password,
+    };
+
+    // update user
+    await User.update(updatedUser, { where: { id: user.id } });
+
+    return res.status(200).json({ message: "User updated successfully" });
+  }
+
+  static async getUserByEmail(req, res) {
+    const email = req.params.ema;
+
+    const user = await UserController.findUserByEmail(value);
+
+    if (user != null) {
       res.status(200).json({
         id: user.id,
         name: user.name,
         email: user.email,
         phone: user.phone,
-        admin: user.admin == 0 ? false : true
-      })
-    }else{
-      res.status(422).json({message: `User with id "${id}" not found!`})
+        admin: user.admin,
+      });
+    } else {
+      res.status(422).json({ message: `User with id "${id}" not found!` });
     }
+  }
 
+  static async getUserById(req, res) {
+    const id = req.params.id;
 
+    const user = await User.findOne({ raw: true, where: { id: id } });
+
+    if (user != null) {
+      res.status(200).json({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        admin: user.admin,
+      });
+    } else {
+      res.status(422).json({ message: `User with id "${id}" not found!` });
+    }
   }
 
   static async checkUser(req, res) {

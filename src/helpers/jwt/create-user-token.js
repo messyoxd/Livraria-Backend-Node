@@ -14,11 +14,9 @@ const createUserToken = async (user, req, res) => {
     {
       email: user.email,
       id: user.id,
+      // iat: Math.floor(Date.now() / 1000) + (3600 * 12)  // expires in 12h
     },
-    jwtSecret,
-    {
-      expiresIn: "12h",
-    }
+    jwtSecret
   );
 
   // return token

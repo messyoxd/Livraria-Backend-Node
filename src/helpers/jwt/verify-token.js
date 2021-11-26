@@ -18,6 +18,14 @@ const checkToken = (req, res, next) => {
 
     try {
         const verified = jwt.verify(token, jwtSecret)
+        // console.log(verified);
+        // const dateNow = new Date()
+        // const expirationDate = new Date( parseInt(verified.iat) * 1000 )
+        // console.log(expirationDate);
+        // console.log(new Date( dateNow.getTime() ));
+        // if( expirationDate > dateNow.getTime()/1000) {
+        //     return res.status(400).json({message: "Token has expired!"})
+        // }
         req.user = verified
         next()
         
