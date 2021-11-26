@@ -24,6 +24,7 @@ const {
   basicValidation,
   emailValidation,
   passwordValidation,
+  editPasswordValidation,
 } = require(path.join(__dirname, "..", "helpers", "validators"));
 
 // routes
@@ -44,7 +45,7 @@ router.post(
       }
     }),
   basicValidation("phone"),
-  passwordValidation("password", 5, 50),
+  passwordValidation("password"),
   basicValidation("confirmpassword")
     .bail()
     .custom((value, { req }) => value === req.body.password)
@@ -75,33 +76,23 @@ router.get("/:id", verifyToken, UserController.getUserById);
 router.patch(
   "/edit/",
   verifyToken,
-  basicValidation("name"),
+  check("name"),
   check("phone"),
-  check("email").custom((value, { req }) => {
-    console.log(req.body.email);
-    if (req.body.email == undefined) return true;
-    else return Primise.isEmail().withMessage("Must be a valid address!");
-  }),
-  check("password").custom((value, { req }) => {
-    const min = 5;
-    const max = 50;
-    if (value != undefined && value != "") {
-      if (value.length < min) {
-        throw new Error(`Must have at least ${min} character(s)!`);
-      } else if (value.length > max) {
-        throw new Error(`Must not have more than ${max} character(s)!`);
-      }
-    } else {
-      return true;
-    }
-  }),
+  check("email")
+    .if(check("email").exists())
+    .isEmail()
+    .withMessage("Must be a valid address!"),
+  editPasswordValidation("password", 5, 50),
   check("confirmpassword")
-    .custom((value, { req }) => {
-      if (req.body.password != undefined) {
-        if (req.body.password != "") return value === req.body.password;
-        else throw new Error("Field confirmpassword is required!");
-      } else return true;
-    })
+    .if(check("password").exists())
+    .exists()
+    .withMessage(`Field confirmpassword is required!`)
+    .bail()
+    .not()
+    .isEmpty()
+    .withMessage("Must not be blank!")
+    .bail()
+    .custom((value, { req }) => value === req.body.password)
     .withMessage("Must match with field password!"),
   UserController.editUser
 );
