@@ -1,7 +1,7 @@
 const path = require("path");
 
 // model
-const User = require(path.join(__dirname, "..", "models", "User.js"));
+const { User } = require(path.join(__dirname, "..", "models", "index.js"));
 
 // field validation
 const { validationResult } = require("express-validator");
@@ -19,26 +19,12 @@ const jwtSecret = require(path.join(
 ))["secret"];
 
 // Helpers
-const createUserToken = require(path.join(
+const { createUserToken, getToken, getUserByToken } = require(path.join(
   __dirname,
   "..",
   "helpers",
   "jwt",
-  "create-user-token.js"
-));
-const getToken = require(path.join(
-  __dirname,
-  "..",
-  "helpers",
-  "jwt",
-  "get-token.js"
-));
-const getUserByToken = require(path.join(
-  __dirname,
-  "..",
-  "helpers",
-  "jwt",
-  "get-user-by-token.js"
+  "index.js"
 ));
 
 module.exports = class UserController {
@@ -170,8 +156,8 @@ module.exports = class UserController {
         raw: true,
         where: { id: decoded.id },
       });
-      if(!currentUser)
-        return res.status(422).json({message: "User not found!"});
+      if (!currentUser)
+        return res.status(422).json({ message: "User not found!" });
       currentUser.password = undefined;
     } else {
       currentUser = null;

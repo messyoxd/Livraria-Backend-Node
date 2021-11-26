@@ -1,6 +1,5 @@
 const path = require('path')
-const getToken = require(path.join(__dirname, 'jwt', 'get-token.js'))
-const getUserByToken = require(path.join(__dirname, 'jwt', 'get-user-by-token.js'))
+const {getToken, getUserByToken} = require(path.join(__dirname, '..', 'jwt', 'index.js'))
 const checkAccessLevel = async (req, res, next) => {
     // get user by token
     const user =  await getUserByToken(getToken(req))

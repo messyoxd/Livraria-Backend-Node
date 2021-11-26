@@ -1,28 +1,29 @@
 const express = require("express");
 const router = express.Router();
 const path = require("path");
-const UserController = require(path.join(
+const { UserController } = require(path.join(
   __dirname,
   "..",
   "controllers",
-  "UserController.js"
+  "index.js"
 ));
 
 // middlewares
 
-const verifyToken = require(path.join(
+const { verifyToken } = require(path.join(
   __dirname,
   "..",
   "helpers",
   "jwt",
-  "verify-token.js"
+  "index.js"
 ));
 
-const checkAccessLevel = require(path.join(
+const { checkIfUserIsAdmin } = require(path.join(
   __dirname,
   "..",
   "helpers",
-  "check-access-level.js"
+  "roles",
+  "index.js"
 ));
 
 // validators
@@ -106,7 +107,7 @@ router.patch(
 router.delete(
   "/delete/:id",
   verifyToken,
-  checkAccessLevel,
+  checkIfUserIsAdmin,
   UserController.deleteUserById
 );
 
