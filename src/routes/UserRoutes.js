@@ -33,7 +33,7 @@ const {
   emailValidation,
   passwordValidation,
   editPasswordValidation,
-} = require(path.join(__dirname, "..", "helpers", "validators"));
+} = require(path.join(__dirname, "..", "helpers", "validators", "user"));
 
 // routes
 
