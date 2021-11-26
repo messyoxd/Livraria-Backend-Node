@@ -79,12 +79,14 @@ module.exports = class UserController {
     const { name, phone, password } = req.body;
 
     let image = "";
-
     // check if current password is equal to the one in the body
+    let checkPassword = false
+    let passwordHash = ""
     if (password != undefined) {
+      console.log(password);
       const salt = await bcrypt.genSalt(12);
-      const passwordHash = await bcrypt.hash(password, salt);
-      const checkPassword = await bcrypt.compare(password, user.password);
+      passwordHash = await bcrypt.hash(password, salt);
+      checkPassword = await bcrypt.compare(password, user.password);
       if (checkPassword)
         return res.status(422).json({
           message: `Field password was sent but has the same value as before!`,
