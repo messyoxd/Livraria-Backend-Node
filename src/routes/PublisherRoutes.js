@@ -1,5 +1,12 @@
 const express = require("express");
 const router = express.Router();
+const path = require("path");
+const { PublisherController } = require(path.join(
+  __dirname,
+  "..",
+  "controllers",
+  "index.js"
+));
 
 // middlewares
 
@@ -18,5 +25,7 @@ const { checkIfUserIsAdmin } = require(path.join(
   "roles",
   "index.js"
 ));
+
+router.post('/create', PublisherController.createPublisher)
 
 module.exports = router
