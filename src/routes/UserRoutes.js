@@ -84,8 +84,6 @@ router.get("/:id", verifyToken, UserController.getUserById);
 router.patch(
   "/edit/",
   verifyToken,
-  check("name"),
-  check("phone"),
   check("email")
     .if(check("email").exists())
     .isEmail()
