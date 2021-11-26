@@ -7,18 +7,29 @@ const { Publisher } = require(path.join(__dirname, "..", "models", "index.js"));
 const { validationResult } = require("express-validator");
 
 module.exports = class PublisherController {
-  static async createPublisher(req, res) {
-    // validations
+    static async getPublisherByID(req, res) {
+        const id = req.params.id;
 
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+        const publisher = await Publisher.findOne({ raw: true, where: { id: id } });
+        if (!publisher)
+            return res.status(422).json({
+                message: `Publisher with id '${id}' not found!`,
+            });
+        return res.status(200).json(publisher);
     }
 
-    const { name, city } = req.body;
+    static async createPublisher(req, res) {
+        // validations
 
-    await Publisher.create({ name: name, city: city });
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
 
-    res.status(200).json({ message: "Publisher created successfully!" });
-  }
+        const { name, city } = req.body;
+
+        await Publisher.create({ name: name, city: city });
+
+        res.status(200).json({ message: "Publisher created successfully!" });
+    }
 };

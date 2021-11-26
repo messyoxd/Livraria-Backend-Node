@@ -46,4 +46,11 @@ router.post(
   PublisherController.createPublisher
 );
 
+// get publisher by id
+router.get(
+  "/:id",
+  verifyToken,
+  PublisherController.getPublisherByID
+)
+
 module.exports = router;
