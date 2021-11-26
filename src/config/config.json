@@ -1,0 +1,13 @@
+{
+    "local_development": {
+        "host": "localhost",
+        "port": 5000,
+        
+        "db_dialect" : "mysql",
+        "db_host": "localhost",
+        "db_port": 3306,
+        "db_name": "livraria-backend-node",
+        "db_pw": "root",
+        "db_user": "root"
+    }
+}
