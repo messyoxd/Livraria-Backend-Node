@@ -1,11 +1,5 @@
 const path = require("path");
-const basicValidation = require(path.join(__dirname, "basicValidation.js"));
+const basicValidation = require(path.join(__dirname, "..", "basicValidation.js"));
 module.exports = function (value, min, max) {
-  return basicValidation(value)
-    .bail()
-    .isLength({ min: min })
-    .withMessage(`Must have at least ${min} character(s)!`)
-    .bail()
-    .isLength({ max: max })
-    .withMessage(`Must not have more than ${max} character(s)!`);
+  return basicValidation(value, min, max); //lacks password regex for a strong password
 };

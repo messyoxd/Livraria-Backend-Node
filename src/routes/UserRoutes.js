@@ -28,8 +28,14 @@ const { checkIfUserIsAdmin } = require(path.join(
 
 // validators
 const { check } = require("express-validator");
+const basicValidation = require(path.join(
+  __dirname,
+  "..",
+  "helpers",
+  "validators",
+  "basicValidation.js"
+));
 const {
-  basicValidation,
   emailValidation,
   passwordValidation,
   editPasswordValidation,

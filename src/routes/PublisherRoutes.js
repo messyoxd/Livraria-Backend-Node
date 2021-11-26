@@ -26,6 +26,24 @@ const { checkIfUserIsAdmin } = require(path.join(
   "index.js"
 ));
 
-router.post('/create', PublisherController.createPublisher)
+// validators
+const basicValidation = require(path.join(
+  __dirname,
+  "..",
+  "helpers",
+  "validators",
+  "basicValidation.js"
+));
 
-module.exports = router
+// routes
+
+// create publisher
+router.post(
+  "/create",
+  verifyToken,
+  basicValidation("name"),
+  basicValidation("city"),
+  PublisherController.createPublisher
+);
+
+module.exports = router;
