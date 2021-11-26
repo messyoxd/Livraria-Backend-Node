@@ -102,6 +102,7 @@ router.patch(
     .withMessage("Must match with field password!"),
   UserController.editUser
 );
+// remove user
 router.delete(
   "/delete/:id",
   verifyToken,
