@@ -12,7 +12,7 @@ const BookRent = db.define("BookRent", {
     },
     devolutionDate: {
         type: DataTypes.DATE,
-        required: true
+        required: false
     },
     rentStatus: {
         type: DataTypes.ENUM({

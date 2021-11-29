@@ -8,9 +8,6 @@ const { Book, Publisher } = require(path.join(
     "index.js"
 ));
 
-// controller
-// const { PublisherController } = require(path.join(__dirname, "index.js"));
-
 // field validation
 const { validationResult } = require("express-validator");
 
@@ -164,7 +161,7 @@ module.exports = class BookController {
 
         if (!publisher)
             return res.status(422).json({
-                message: `Publisher with id '${publisherId}' not found!`,
+                message: `Publisher not found!`,
             });
 
         const newBook = {
@@ -178,7 +175,6 @@ module.exports = class BookController {
             await Book.create(newBook);
             res.status(201).json({ message: "Book successfully created!" });
         } catch (error) {
-            console.log(error);
             res.status(500).json({
                 message:
                     "An Error ocurred at the server when creating a new Book!",
