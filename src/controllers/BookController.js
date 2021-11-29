@@ -1,7 +1,12 @@
 const path = require("path");
 
 // model
-const { Book, Publisher } = require(path.join(__dirname, "..", "models", "index.js"));
+const { Book, Publisher } = require(path.join(
+    __dirname,
+    "..",
+    "models",
+    "index.js"
+));
 
 // controller
 // const { PublisherController } = require(path.join(__dirname, "index.js"));
@@ -10,6 +15,22 @@ const { Book, Publisher } = require(path.join(__dirname, "..", "models", "index.
 const { validationResult } = require("express-validator");
 
 module.exports = class BookController {
+    static async findBookById(id) {
+        return await Book.findOne({ raw: true, where: { id: id } });
+    }
+
+    static async getBookById(req, res) {
+        const id = req.params.id;
+
+        const book = await BookController.findBookById(id);
+
+        if (!book)
+            return res.status(422).json({
+                message: `Book with id '${id}' not found!`,
+            });
+        return res.status(200).json(book)
+    }
+
     static async createBook(req, res) {
         // validations
         const errors = validationResult(req);
@@ -21,7 +42,10 @@ module.exports = class BookController {
             req.body;
 
         // find publisher
-        const publisher = Publisher.findOne({raw: true, where: {id: publisherId}});
+        const publisher = Publisher.findOne({
+            raw: true,
+            where: { id: publisherId },
+        });
 
         if (!publisher)
             return res.status(422).json({

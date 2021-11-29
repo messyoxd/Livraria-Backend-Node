@@ -49,7 +49,6 @@ const { stockValidation, dateValidation } = require(path.join(
 // routes
 
 // create Book
-
 router.post(
     "/create",
     verifyToken,
@@ -60,5 +59,8 @@ router.post(
     stockValidation("availableStock"),
     BookController.createBook
 );
+
+// get book by id
+router.get('/:id', verifyToken, BookController.getBookById)
 
 module.exports = router;
