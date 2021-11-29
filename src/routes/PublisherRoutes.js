@@ -62,4 +62,11 @@ router.patch(
     PublisherController.editPublisher
 );
 
+// delete publish
+router.delete(
+    "/delete/:id",
+    verifyToken,
+    PublisherController.deletePublisherById
+);
+
 module.exports = router;

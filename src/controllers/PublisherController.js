@@ -7,6 +7,28 @@ const { Publisher } = require(path.join(__dirname, "..", "models", "index.js"));
 const { validationResult } = require("express-validator");
 
 module.exports = class PublisherController {
+    static async deletePublisherById(req, res) {
+        const id = req.params.id;
+
+        const publisher = await PublisherController.findPublisherByID(id);
+
+        if (!publisher) {
+            return res.status(422).json({ message: `Publisher not found!` });
+        }
+
+        try {
+            await Publisher.destroy({ where: { id: id } });
+            return res.status(200).json({
+                message: `Publisher '${id}' deleted successfully!`,
+            });
+        } catch (error) {
+            console.log(error);
+            return res
+                .status(500)
+                .json({ error: "There was an error at the server!" });
+        }
+    }
+
     static async editPublisher(req, res) {
         // validations
 
@@ -21,7 +43,7 @@ module.exports = class PublisherController {
                 .json({ message: "Nothing was sent to update!" });
 
         const id = req.params.id;
-        const publisher = PublisherController.findUserByID(id);
+        const publisher = PublisherController.findPublisherByID(id);
         if (!publisher)
             return res.status(422).json({
                 message: `Publisher with id '${id}' not found!`,
@@ -36,21 +58,21 @@ module.exports = class PublisherController {
 
         await Publisher.update(editedPublisher, { where: { id: id } });
 
-        res.status(200).json({message: `Publisher successfully updated!`})
+        res.status(200).json({ message: `Publisher successfully updated!` });
     }
 
     static async getAllPublishers(req, res) {
         return res.status(200).json(await Publisher.findAll());
     }
 
-    static async findUserByID(id) {
+    static async findPublisherByID(id) {
         return await Publisher.findOne({ raw: true, where: { id: id } });
     }
 
     static async getPublisherByID(req, res) {
         const id = req.params.id;
 
-        const publisher = await PublisherController.findUserByID(id);
+        const publisher = await PublisherController.findPublisherByID(id);
         if (!publisher)
             return res.status(422).json({
                 message: `Publisher with id '${id}' not found!`,
