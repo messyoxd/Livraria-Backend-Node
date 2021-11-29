@@ -1,8 +1,7 @@
-const path = require("path");
-const basicValidation = require(path.join(__dirname, "basicValidation.js"));
-module.exports = function (value, min, max) {
-  return basicValidation(value)
-    .bail()
+const { check } = require("express-validator");
+module.exports = function (value, min = 5, max = 50) {
+  return check(value)
+    .if((v, { req }) => req.body[value] !== undefined)
     .isLength({ min: min })
     .withMessage(`Must have at least ${min} character(s)!`)
     .bail()
