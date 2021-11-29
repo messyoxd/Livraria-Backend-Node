@@ -10,7 +10,7 @@ module.exports = class PublisherController {
     static async deletePublisherById(req, res) {
         const id = req.params.id;
 
-        const publisher = await PublisherController.findPublisherByID(id);
+        const publisher = await PublisherController.findPublisherById(id);
 
         if (!publisher) {
             return res.status(422).json({ message: `Publisher not found!` });
@@ -43,7 +43,7 @@ module.exports = class PublisherController {
                 .json({ message: "Nothing was sent to update!" });
 
         const id = req.params.id;
-        const publisher = PublisherController.findPublisherByID(id);
+        const publisher = PublisherController.findPublisherById(id);
         if (!publisher)
             return res.status(422).json({
                 message: `Publisher with id '${id}' not found!`,
@@ -65,14 +65,14 @@ module.exports = class PublisherController {
         return res.status(200).json(await Publisher.findAll());
     }
 
-    static async findPublisherByID(id) {
+    static async findPublisherById(id) {
         return await Publisher.findOne({ raw: true, where: { id: id } });
     }
 
     static async getPublisherByID(req, res) {
         const id = req.params.id;
 
-        const publisher = await PublisherController.findPublisherByID(id);
+        const publisher = await PublisherController.findPublisherById(id);
         if (!publisher)
             return res.status(422).json({
                 message: `Publisher with id '${id}' not found!`,

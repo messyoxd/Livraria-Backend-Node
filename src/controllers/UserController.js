@@ -94,7 +94,6 @@ module.exports = class UserController {
         let checkPassword = false;
         let passwordHash = "";
         if (password != undefined) {
-            console.log(password);
             const salt = await bcrypt.genSalt(12);
             passwordHash = await bcrypt.hash(password, salt);
             checkPassword = await bcrypt.compare(password, user.password);

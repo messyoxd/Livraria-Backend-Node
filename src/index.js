@@ -7,6 +7,7 @@ const conn = require(path.join(__dirname, 'db', 'conn.js'))
 
 conn
   .sync()
+  // .sync({force: true})
   .then(() => app.listen(config['port']))
   .catch((err) => console.log(err));
 
