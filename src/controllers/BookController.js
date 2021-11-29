@@ -15,17 +15,34 @@ const { Book, Publisher } = require(path.join(
 const { validationResult } = require("express-validator");
 
 module.exports = class BookController {
+    static async deleteBookById(req, res){
+        const bookId = req.params.id;
+
+        const book = await BookController.findBookById(bookId);
+        if (!book)
+            return res.status(422).json({
+                message: `Book with id '${bookId}' not found!`,
+            });
+        try {
+            await Book.destroy({where: {id: bookId}})
+            return res.status(200).json({message: "Book successfully deleted!"})
+        } catch (error) {
+            return res.status(500).json({
+                message: "An Error ocurred at the server when deleting book!",
+            });
+        }
+    }
+
     static async editBook(req, res) {
         // validations
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
-        
+
         const bookId = req.params.id;
 
         const book = await BookController.findBookById(bookId);
-        console.log(book);
         if (!book)
             return res.status(422).json({
                 message: `Book with id '${bookId}' not found!`,
@@ -38,6 +55,17 @@ module.exports = class BookController {
 
         const { publisherId, author, title, publishedDate, availableStock } =
             req.body;
+
+        // find publisher
+        const publisher = await Publisher.findOne({
+            raw: true,
+            where: { id: publisherId },
+        });
+        console.log(publisher);
+        if (!publisher)
+            return res.status(422).json({
+                message: `Publisher with id '${publisherId}' not found!`,
+            });
 
         const editedBook = {
             PublisherId:
@@ -66,10 +94,10 @@ module.exports = class BookController {
 
         try {
             await Book.update(editedBook, { where: { id: bookId } });
-            res.status(200).json("Book successfully edited!")
+            return res.status(200).json("Book successfully edited!")
         } catch (error) {
-            console.log(error);
-            res.status(500).json({
+            // console.log(error);
+            return res.status(500).json({
                 message: "An Error ocurred at the server when updating book!",
             });
         }
@@ -102,7 +130,7 @@ module.exports = class BookController {
             req.body;
 
         // find publisher
-        const publisher = Publisher.findOne({
+        const publisher = await Publisher.findOne({
             raw: true,
             where: { id: publisherId },
         });

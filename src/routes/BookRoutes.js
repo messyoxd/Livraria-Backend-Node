@@ -79,5 +79,11 @@ router.patch(
     editStockValidation("availableStock"),
     BookController.editBook
 );
+// delete book
+router.delete(
+    "/delete/:id",
+    verifyToken,
+    BookController.deleteBookById
+)
 
 module.exports = router;
