@@ -37,7 +37,12 @@ const { basicValidation, editBasicValidation } = require(path.join(
     "index.js"
 ));
 
-const { stockValidation, dateValidation } = require(path.join(
+const {
+    stockValidation,
+    dateValidation,
+    editDateValidation,
+    editStockValidation,
+} = require(path.join(
     __dirname,
     "..",
     "helpers",
@@ -61,6 +66,18 @@ router.post(
 );
 
 // get book by id
-router.get('/:id', verifyToken, BookController.getBookById)
+router.get("/:id", verifyToken, BookController.getBookById);
+
+// edit Book
+router.patch(
+    "/edit/:id",
+    verifyToken,
+    editBasicValidation("publisherId", 1),
+    editBasicValidation("author"),
+    editBasicValidation("title"),
+    editDateValidation("publishedDate"),
+    editStockValidation("availableStock"),
+    BookController.editBook
+);
 
 module.exports = router;
