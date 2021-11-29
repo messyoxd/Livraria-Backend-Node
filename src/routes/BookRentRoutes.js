@@ -38,6 +38,7 @@ const {
 
 // routes
 
+// rent a book
 router.post(
     "/rent",
     verifyToken,

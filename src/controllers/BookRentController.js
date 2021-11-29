@@ -52,6 +52,10 @@ module.exports = class BookRentController {
         if (book.availableStock > 0) {
             book.availableStock = book.availableStock - 1;
             await Book.update(book, { where: { id: book.id } });
+        }else{
+            return res.status(422).json({
+                message: `Book not available!`,
+            });
         }
         // create book rent
         const estimate = new Date()
