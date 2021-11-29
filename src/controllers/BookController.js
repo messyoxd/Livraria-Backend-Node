@@ -96,11 +96,28 @@ module.exports = class BookController {
             await Book.update(editedBook, { where: { id: bookId } });
             return res.status(200).json("Book successfully edited!")
         } catch (error) {
-            // console.log(error);
             return res.status(500).json({
                 message: "An Error ocurred at the server when updating book!",
             });
         }
+    }
+
+    static async getAllBooks(req, res){
+        const books = await Book.findAll({raw: true})
+        let bookDtoList = []
+        for (let index = 0; index < books.length; index++) {
+            let publisher = await Publisher.findOne({raw:true, where:{id: books[index].PublisherId}})
+            bookDtoList.push({
+                author: books[index].author,
+                title: books[index].title,
+                publishedDate: books[index].publishedDate,
+                availableStock: books[index].availableStock,
+                publisher: publisher,
+                createdAt: books[index].createdAt,
+                updateAt: books[index].updateAt
+            })   
+        }
+        return res.status(200).json(bookDtoList)
     }
 
     static async findBookById(id) {
@@ -116,7 +133,17 @@ module.exports = class BookController {
             return res.status(422).json({
                 message: `Book with id '${id}' not found!`,
             });
-        return res.status(200).json(book);
+        const publisher = await Publisher.findOne({raw:true, where:{id: book.PublisherId}})
+        const bookDto = {
+            author: book.author,
+            title: book.title,
+            publishedDate: book.publishedDate,
+            availableStock: book.availableStock,
+            publisher: publisher,
+            createdAt: book.createdAt,
+            updateAt: book.updateAt
+        }
+        return res.status(200).json(bookDto);
     }
 
     static async createBook(req, res) {

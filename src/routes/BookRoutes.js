@@ -68,6 +68,9 @@ router.post(
 // get book by id
 router.get("/:id", verifyToken, BookController.getBookById);
 
+// get all books
+router.get("/", verifyToken, BookController.getAllBooks)
+
 // edit Book
 router.patch(
     "/edit/:id",
