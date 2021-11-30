@@ -8,11 +8,14 @@ const { Book, Publisher } = require(path.join(
     "index.js"
 ));
 
+// Dto
+const { BookDto } = require(path.join(__dirname, "..", "dto", "index.js"));
+
 // field validation
 const { validationResult } = require("express-validator");
 
 module.exports = class BookController {
-    static async deleteBookById(req, res){
+    static async deleteBookById(req, res) {
         const bookId = req.params.id;
 
         const book = await BookController.findBookById(bookId);
@@ -21,8 +24,10 @@ module.exports = class BookController {
                 message: `Book with id '${bookId}' not found!`,
             });
         try {
-            await Book.destroy({where: {id: bookId}})
-            return res.status(200).json({message: "Book successfully deleted!"})
+            await Book.destroy({ where: { id: bookId } });
+            return res
+                .status(200)
+                .json({ message: "Book successfully deleted!" });
         } catch (error) {
             return res.status(500).json({
                 message: "An Error ocurred at the server when deleting book!",
@@ -91,7 +96,7 @@ module.exports = class BookController {
 
         try {
             await Book.update(editedBook, { where: { id: bookId } });
-            return res.status(200).json("Book successfully edited!")
+            return res.status(200).json("Book successfully edited!");
         } catch (error) {
             return res.status(500).json({
                 message: "An Error ocurred at the server when updating book!",
@@ -99,11 +104,15 @@ module.exports = class BookController {
         }
     }
 
-    static async getAllBooks(req, res){
-        const books = await Book.findAll({raw: true})
-        let bookDtoList = []
+    static async getAllBooks(req, res) {
+        const books = await Book.findAll({ raw: true });
+        let bookDtoList = [];
+        let publisher;
         for (let index = 0; index < books.length; index++) {
-            let publisher = await Publisher.findOne({raw:true, where:{id: books[index].PublisherId}})
+            publisher = await Publisher.findOne({
+                raw: true,
+                where: { id: books[index].PublisherId },
+            });
             bookDtoList.push({
                 author: books[index].author,
                 title: books[index].title,
@@ -111,10 +120,10 @@ module.exports = class BookController {
                 availableStock: books[index].availableStock,
                 publisher: publisher,
                 createdAt: books[index].createdAt,
-                updateAt: books[index].updateAt
-            })   
+                updateAt: books[index].updateAt,
+            });
         }
-        return res.status(200).json(bookDtoList)
+        return res.status(200).json(bookDtoList);
     }
 
     static async findBookById(id) {
@@ -130,17 +139,11 @@ module.exports = class BookController {
             return res.status(422).json({
                 message: `Book with id '${id}' not found!`,
             });
-        const publisher = await Publisher.findOne({raw:true, where:{id: book.PublisherId}})
-        const bookDto = {
-            author: book.author,
-            title: book.title,
-            publishedDate: book.publishedDate,
-            availableStock: book.availableStock,
-            publisher: publisher,
-            createdAt: book.createdAt,
-            updateAt: book.updateAt
-        }
-        return res.status(200).json(bookDto);
+        const publisher = await Publisher.findOne({
+            raw: true,
+            where: { id: book.PublisherId },
+        });
+        return res.status(200).json(BookDto.toDto(book, publisher));
     }
 
     static async createBook(req, res) {

@@ -3,6 +3,9 @@ const path = require("path");
 // model
 const { User } = require(path.join(__dirname, "..", "models", "index.js"));
 
+// Dto
+const { UserDto } = require(path.join(__dirname, "..", "dto", "index.js"));
+
 // field validation
 const { validationResult } = require("express-validator");
 
@@ -128,18 +131,12 @@ module.exports = class UserController {
     }
 
     static async getUserByEmail(req, res) {
-        const email = req.params.ema;
+        const email = req.params.email;
 
         const user = await UserController.findUserByEmail(value);
 
         if (user != null) {
-            res.status(200).json({
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                phone: user.phone,
-                admin: user.admin,
-            });
+            res.status(200).json(UserDto.toDto(user));
         } else {
             res.status(422).json({
                 message: `User with id "${id}" not found!`,
@@ -153,13 +150,7 @@ module.exports = class UserController {
         const user = await User.findOne({ raw: true, where: { id: id } });
 
         if (user != null) {
-            res.status(200).json({
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                phone: user.phone,
-                admin: user.admin,
-            });
+            res.status(200).json(UserDto.toDto(user));
         } else {
             res.status(422).json({
                 message: `User with id '${id}' not found!`,
@@ -168,21 +159,19 @@ module.exports = class UserController {
     }
 
     static async checkUser(req, res) {
-        let currentUser;
         if (req.headers.authorization) {
             const token = getToken(req);
             const decoded = jwt.verify(token, jwtSecret);
-            currentUser = await User.findOne({
+            const currentUser = await User.findOne({
                 raw: true,
                 where: { id: decoded.id },
             });
             if (!currentUser)
                 return res.status(422).json({ message: "User not found!" });
-            currentUser.password = undefined;
-        } else {
-            currentUser = null;
+
+            return res.status(200).send(UserDto.toDto(currentUser));
         }
-        res.status(200).send(currentUser);
+        return res.status(401).json({ message: "Unauthorized!" });
     }
 
     static async login(req, res) {

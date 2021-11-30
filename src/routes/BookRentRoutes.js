@@ -48,4 +48,39 @@ router.post(
     BookRentController.createBookRent
 );
 
+// get all book rents
+router.get(
+    "/rent/",
+    verifyToken,
+    BookRentController.getAllBookRents
+);
+
+// get a book rent by id
+router.get(
+    "/rent/:id",
+    verifyToken,
+    BookRentController.getBookRentById
+);
+
+// get all book rents from user
+router.get(
+    "/rent/user/:userId",
+    verifyToken,
+    BookRentController.getAllUserRents
+);
+
+// get all book rents from book
+router.get(
+    "/rent/book/:bookId",
+    verifyToken,
+    BookRentController.getAllBookRents
+);
+
+// get book rent from user and book
+router.get(
+    "/rent/user/:userId/book/:bookId",
+    verifyToken,
+    BookRentController.getBookRentByUserAndBookIds
+);
+
 module.exports = router;
