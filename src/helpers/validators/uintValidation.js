@@ -1,5 +1,5 @@
 const { check } = require("express-validator");
-module.exports = function (value, min = 0) {
+module.exports = function (value, min = 0, max = 9007199254740991) {
     return check(value)
         .exists()
         .withMessage(`Field ${value} is required!`)
@@ -13,6 +13,7 @@ module.exports = function (value, min = 0) {
         .bail()
         .custom((value, { req }) => {
             if (value < min) throw new Error(`Must be bigger than ${min}!`);
+            if (value > max) throw new Error(`Must be lower than ${max}!`);
             return true;
         });
 };

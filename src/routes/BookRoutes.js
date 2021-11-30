@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const path = require("path");
-const { route } = require("./PublisherRoutes");
 const { BookController } = require(path.join(
     __dirname,
     "..",
@@ -29,27 +28,15 @@ const { checkIfUserIsAdmin } = require(path.join(
 
 // validators
 
-const { basicValidation, editBasicValidation } = require(path.join(
-    __dirname,
-    "..",
-    "helpers",
-    "validators",
-    "index.js"
-));
-
 const {
-    stockValidation,
+    basicValidation,
+    editBasicValidation,
     dateValidation,
     editDateValidation,
-    editStockValidation,
-} = require(path.join(
-    __dirname,
-    "..",
-    "helpers",
-    "validators",
-    "book",
-    "index.js"
-));
+    uintValidation,
+    editUintValidation
+} = require(path.join(__dirname, "..", "helpers", "validators", "index.js"));
+
 
 // routes
 
@@ -61,7 +48,7 @@ router.post(
     basicValidation("author"),
     basicValidation("title"),
     dateValidation("publishedDate"),
-    stockValidation("availableStock"),
+    uintValidation("availableStock"),
     BookController.createBook
 );
 
@@ -69,7 +56,7 @@ router.post(
 router.get("/:id", verifyToken, BookController.getBookById);
 
 // get all books
-router.get("/", verifyToken, BookController.getAllBooks)
+router.get("/", verifyToken, BookController.getAllBooks);
 
 // edit Book
 router.patch(
@@ -79,14 +66,10 @@ router.patch(
     editBasicValidation("author"),
     editBasicValidation("title"),
     editDateValidation("publishedDate"),
-    editStockValidation("availableStock"),
+    editUintValidation("availableStock"),
     BookController.editBook
 );
 // delete book
-router.delete(
-    "/delete/:id",
-    verifyToken,
-    BookController.deleteBookById
-)
+router.delete("/delete/:id", verifyToken, BookController.deleteBookById);
 
 module.exports = router;

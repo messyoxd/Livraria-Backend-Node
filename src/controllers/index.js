@@ -5,8 +5,13 @@ const PublisherController = require(path.join(
     "PublisherController.js"
 ));
 const BookController = require(path.join(__dirname, "BookController.js"));
+const BookRentController = require(path.join(
+    __dirname,
+    "BookRentController.js"
+));
 module.exports = {
     UserController: UserController,
     PublisherController: PublisherController,
     BookController: BookController,
+    BookRentController: BookRentController,
 };
