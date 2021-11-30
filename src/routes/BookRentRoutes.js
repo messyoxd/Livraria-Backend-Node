@@ -90,5 +90,11 @@ router.patch(
     BookRentController.returnBook
 );
 
+// delete book rent
+router.delete(
+    "/rent/:id",
+    verifyToken,
+    BookRentController.deleteBookRent
+)
 
 module.exports = router;

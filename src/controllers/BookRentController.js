@@ -15,6 +15,30 @@ const { BookRentDto } = require(path.join(__dirname, "..", "dto", "index.js"));
 const { validationResult } = require("express-validator");
 
 module.exports = class BookRentController {
+    static async deleteBookRent(req, res) {
+        const id = req.params.id;
+
+        const bookRent = await BookRent.findOne({
+            raw: true,
+            where: { id: id },
+        });
+        if (!bookRent)
+            return res.status(422).json({
+                message: `Book Rent not found!`,
+            });
+        try {
+            await BookRent.destroy({ where: { id: id } });
+            return res
+                .status(200)
+                .json({ message: "Book Rent successfully deleted!" });
+        } catch (error) {
+            return res.status(500).json({
+                message:
+                    "An Error ocurred at the server when deleting book rent!",
+            });
+        }
+    }
+
     static async returnBook(req, res) {
         const id = req.params.id;
         const bookRent = await BookRent.findOne({
