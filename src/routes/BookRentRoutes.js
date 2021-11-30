@@ -83,4 +83,12 @@ router.get(
     BookRentController.getBookRentByUserAndBookIds
 );
 
+// return book
+router.patch(
+    "/rent/:id",
+    verifyToken,
+    BookRentController.returnBook
+);
+
+
 module.exports = router;

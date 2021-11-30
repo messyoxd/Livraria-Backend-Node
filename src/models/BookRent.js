@@ -16,7 +16,7 @@ const BookRent = db.define("BookRent", {
     },
     rentStatus: {
         type: DataTypes.ENUM({
-            values: ["Rented", "Returned", "Late", "Returned Late"]
+            values: ["Rented", "Returned", "Returned Late"]
         }),
         required: true
     },

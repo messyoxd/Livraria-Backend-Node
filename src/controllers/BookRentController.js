@@ -15,6 +15,38 @@ const { BookRentDto } = require(path.join(__dirname, "..", "dto", "index.js"));
 const { validationResult } = require("express-validator");
 
 module.exports = class BookRentController {
+    static async returnBook(req, res) {
+        const id = req.params.id;
+        const bookRent = await BookRent.findOne({
+            raw: true,
+            where: { id: id },
+        });
+        if (!bookRent)
+            return res.status(422).json({
+                message: `Book Rent not found!`,
+            });
+        bookRent.devolutionDate = new Date();
+        if (
+            bookRent.devolutionDate <
+            new Date(Date.parse(bookRent.devolutionEstimate))
+        ) {
+            bookRent.rentStatus = 3;
+        } else {
+            bookRent.rentStatus = 2;
+        }
+        try {
+            // increment the book stock by 1
+            await BookRentController.alterBookStock(id);
+        } catch (error) {
+            console.log(error);
+            return res.status(422).json({
+                message: error,
+            });
+        }
+        await BookRent.update(bookRent, { where: { id: id } });
+        return res.status(200).json({ message: "Book returned successfully!" });
+    }
+
     static async getBookRentByUserAndBookIds(req, res) {
         const { bookId, userId } = req.params;
         const book = await Book.findOne({ raw: true, where: { id: bookId } });
@@ -35,6 +67,7 @@ module.exports = class BookRentController {
             .status(200)
             .json(await BookRentController.getBookRentDtoList(bookRents));
     }
+
     static async getAllBookRents(req, res) {
         const bookId = req.params.bookId;
         const book = await Book.findOne({ raw: true, where: { id: bookId } });
@@ -50,7 +83,7 @@ module.exports = class BookRentController {
             .status(200)
             .json(await BookRentController.getBookRentDtoList(bookRents));
     }
-    
+
     static async getAllUserRents(req, res) {
         const userId = req.params.userId;
         const user = await User.findOne({ raw: true, where: { id: userId } });
@@ -121,6 +154,29 @@ module.exports = class BookRentController {
             .json(await BookRentController.getBookRentDtoList(bookRents));
     }
 
+    static async alterBookStock(bookId, value = 1, increment = true) {
+        try {
+            const book = await Book.findOne({
+                raw: true,
+                where: { id: bookId },
+            });
+
+            if (!book) throw new Error(`Book not found!`);
+
+            if (increment) book.availableStock = book.availableStock + value;
+            else {
+                if (book.availableStock > 0)
+                    book.availableStock = book.availableStock - value;
+                else {
+                    throw new Error(`Book not available!`);
+                }
+            }
+            await Book.update(book, { where: { id: book.id } });
+        } catch (error) {
+            return error;
+        }
+    }
+
     static async createBookRent(req, res) {
         // validations
 
@@ -142,26 +198,15 @@ module.exports = class BookRentController {
                 message: `User not found!`,
             });
 
-        // find book
-        const book = await Book.findOne({
-            raw: true,
-            where: { id: bookId },
-        });
-
-        if (!book)
+        try {
+            // decrement the book stock by 1
+            await BookRentController.alterBookStock(bookId, 1, false);
+        } catch (error) {
             return res.status(422).json({
-                message: `Book not found!`,
-            });
-
-        // check if the book is available
-        if (book.availableStock > 0) {
-            book.availableStock = book.availableStock - 1;
-            await Book.update(book, { where: { id: book.id } });
-        } else {
-            return res.status(422).json({
-                message: `Book not available!`,
+                message: error,
             });
         }
+
         // create book rent
         const estimate = new Date();
         estimate.setHours(2 * 24);
