@@ -46,7 +46,7 @@ module.exports = class PublisherController {
         const publisher = PublisherController.findPublisherById(id);
         if (!publisher)
             return res.status(422).json({
-                message: `Publisher with id '${id}' not found!`,
+                message: `Publisher not found!`,
             });
 
         const { name, city } = req.body;

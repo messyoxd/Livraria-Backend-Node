@@ -47,7 +47,7 @@ module.exports = class BookController {
         const book = await BookController.findBookById(bookId);
         if (!book)
             return res.status(422).json({
-                message: `Book with id '${bookId}' not found!`,
+                message: `Book not found!`,
             });
 
         if (!Object.keys(req.body).length)
@@ -113,15 +113,7 @@ module.exports = class BookController {
                 raw: true,
                 where: { id: books[index].PublisherId },
             });
-            bookDtoList.push({
-                author: books[index].author,
-                title: books[index].title,
-                publishedDate: books[index].publishedDate,
-                availableStock: books[index].availableStock,
-                publisher: publisher,
-                createdAt: books[index].createdAt,
-                updateAt: books[index].updateAt,
-            });
+            bookDtoList.push(BookDto.toDto(books[index], publisher));
         }
         return res.status(200).json(bookDtoList);
     }

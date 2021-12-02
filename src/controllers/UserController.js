@@ -183,7 +183,7 @@ module.exports = class UserController {
 
         const { email, password } = req.body;
 
-        const user = await User.findOne({ email: email });
+        const user = await User.findOne({ raw: true, where: { email: email } });
 
         // check password
         const checkPassword = await bcrypt.compare(password, user.password);
