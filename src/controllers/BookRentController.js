@@ -72,6 +72,21 @@ module.exports = class BookRentController {
     }
 
     static async getBookRentByUserAndBookIds(req, res) {
+        // validations
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        const { page, size } = req.query;
+        const pageNumber = Number.parseInt(page);
+        const sizeNumber = Number.parseInt(size);
+
+        if (sizeNumber > 20)
+            return res
+                .status(422)
+                .json({ message: "Can only get as much as 20 entries!" });
+
         const { bookId, userId } = req.params;
         const book = await Book.findOne({ raw: true, where: { id: bookId } });
         if (!book)
@@ -83,26 +98,46 @@ module.exports = class BookRentController {
             return res.status(422).json({
                 message: `User not found!`,
             });
-        const bookRents = await BookRent.findAll({
-            raw: true,
+
+        const bookRentsQuery = await BookRent.findAndCountAll({
+            limit: sizeNumber,
+            offset: pageNumber * sizeNumber,
             where: { BookId: bookId, UserId: userId },
         });
+        const bookRents = bookRentsQuery["rows"];
         return res
             .status(200)
             .json(await BookRentController.getBookRentDtoList(bookRents));
     }
 
     static async getAllBookRents(req, res) {
+        // validations
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        const { page, size } = req.query;
+        const pageNumber = Number.parseInt(page);
+        const sizeNumber = Number.parseInt(size);
+
+        if (sizeNumber > 20)
+            return res
+                .status(422)
+                .json({ message: "Can only get as much as 20 entries!" });
+
         const bookId = req.params.bookId;
         const book = await Book.findOne({ raw: true, where: { id: bookId } });
         if (!book)
             return res.status(422).json({
                 message: `Book not found!`,
             });
-        const bookRents = await BookRent.findAll({
-            raw: true,
+        const bookRentsQuery = await BookRent.findAndCountAll({
+            limit: sizeNumber,
+            offset: pageNumber * sizeNumber,
             where: { BookId: bookId },
         });
+        const bookRents = bookRentsQuery["rows"];
         return res
             .status(200)
             .json(await BookRentController.getBookRentDtoList(bookRents));
@@ -110,15 +145,32 @@ module.exports = class BookRentController {
 
     static async getAllUserRents(req, res) {
         const userId = req.params.userId;
+        // validations
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        const { page, size } = req.query;
+        const pageNumber = Number.parseInt(page);
+        const sizeNumber = Number.parseInt(size);
+
+        if (sizeNumber > 20)
+            return res
+                .status(422)
+                .json({ message: "Can only get as much as 20 entries!" });
+
         const user = await User.findOne({ raw: true, where: { id: userId } });
         if (!user)
             return res.status(422).json({
                 message: `User not found!`,
             });
-        const userRents = await BookRent.findAll({
-            raw: true,
+        const userRentsQuery = await BookRent.findAndCountAll({
+            limit: sizeNumber,
+            offset: pageNumber * sizeNumber,
             where: { UserId: userId },
         });
+        const userRents = userRentsQuery["rows"];
         return res
             .status(200)
             .json(await BookRentController.getBookRentDtoList(userRents));
@@ -171,8 +223,27 @@ module.exports = class BookRentController {
         return bookRentsDtoList;
     }
 
-    static async getAllBookRents(req, res) {
-        const bookRents = await BookRent.findAll({ raw: true });
+    static async getAllRents(req, res) {
+        // validations
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        const { page, size } = req.query;
+        const pageNumber = Number.parseInt(page);
+        const sizeNumber = Number.parseInt(size);
+
+        if (sizeNumber > 20)
+            return res
+                .status(422)
+                .json({ message: "Can only get as much as 20 entries!" });
+
+        const bookRentsQuery = await BookRent.findAndCountAll({
+            limit: sizeNumber,
+            offset: pageNumber * sizeNumber,
+        });
+        const bookRents = bookRentsQuery["rows"];
         return res
             .status(200)
             .json(await BookRentController.getBookRentDtoList(bookRents));
