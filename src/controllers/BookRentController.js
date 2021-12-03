@@ -105,9 +105,13 @@ module.exports = class BookRentController {
             where: { BookId: bookId, UserId: userId },
         });
         const bookRents = bookRentsQuery["rows"];
-        return res
-            .status(200)
-            .json(await BookRentController.getBookRentDtoList(bookRents));
+        const bookRentsDto = await BookRentController.getBookRentDtoList(
+            bookRents
+        );
+        return res.status(200).json({
+            totalPages: Math.ceil(bookRentsQuery["count"] / size),
+            content: bookRentsDto,
+        });
     }
 
     static async getAllBookRents(req, res) {
@@ -138,9 +142,13 @@ module.exports = class BookRentController {
             where: { BookId: bookId },
         });
         const bookRents = bookRentsQuery["rows"];
-        return res
-            .status(200)
-            .json(await BookRentController.getBookRentDtoList(bookRents));
+        const bookRentsDto = await BookRentController.getBookRentDtoList(
+            bookRents
+        );
+        return res.status(200).json({
+            totalPages: Math.ceil(bookRentsQuery["count"] / size),
+            content: bookRentsDto,
+        });
     }
 
     static async getAllUserRents(req, res) {
@@ -171,9 +179,13 @@ module.exports = class BookRentController {
             where: { UserId: userId },
         });
         const userRents = userRentsQuery["rows"];
-        return res
-            .status(200)
-            .json(await BookRentController.getBookRentDtoList(userRents));
+        const userRentsDto = await BookRentController.getBookRentDtoList(
+            userRents
+        );
+        return res.status(200).json({
+            totalPages: Math.ceil(userRentsQuery["count"] / size),
+            content: userRentsDto,
+        });
     }
 
     static async getBookRentById(req, res) {
@@ -244,9 +256,13 @@ module.exports = class BookRentController {
             offset: pageNumber * sizeNumber,
         });
         const bookRents = bookRentsQuery["rows"];
-        return res
-            .status(200)
-            .json(await BookRentController.getBookRentDtoList(bookRents));
+        const bookRentsDto = await BookRentController.getBookRentDtoList(
+            bookRents
+        );
+        return res.status(200).json({
+            totalPages: Math.ceil(bookRentsQuery["count"] / size),
+            content: bookRentsDto,
+        });
     }
 
     static async alterBookStock(bookId, value = 1, increment = true) {

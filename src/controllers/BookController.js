@@ -133,7 +133,11 @@ module.exports = class BookController {
             });
             bookDtoList.push(BookDto.toDto(books[index], publisher));
         }
-        return res.status(200).json(bookDtoList);
+        return res.status(200).json(
+            {
+                totalPages: Math.ceil(booksQuery['count'] / size),
+                content: bookDtoList
+            });
     }
 
     static async findBookById(id) {
