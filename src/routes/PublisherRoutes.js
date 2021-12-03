@@ -28,7 +28,7 @@ const { checkIfUserIsAdmin } = require(path.join(
 
 // validators
 const { check } = require("express-validator");
-const { basicValidation, editBasicValidation } = require(path.join(
+const { basicValidation, editBasicValidation, paginationValidation } = require(path.join(
     __dirname,
     "..",
     "helpers",
@@ -51,7 +51,7 @@ router.post(
 router.get("/:id", verifyToken, PublisherController.getPublisherByID);
 
 // get all publishers
-router.get("/", verifyToken, PublisherController.getAllPublishers);
+router.get("/", verifyToken, paginationValidation("page"), paginationValidation("size"), PublisherController.getAllPublishers);
 
 // edit publish
 router.patch(

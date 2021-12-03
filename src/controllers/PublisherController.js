@@ -62,7 +62,21 @@ module.exports = class PublisherController {
     }
 
     static async getAllPublishers(req, res) {
-        return res.status(200).json(await Publisher.findAll());
+        // validations
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        const {page, size} = req.query
+        const pageNumber = Number.parseInt(page)
+        const sizeNumber = Number.parseInt(size)
+
+        if(sizeNumber > 20)
+            return res.status(422).json({message: "Can only get as much as 20 entries!"})
+
+        const publishers = await Publisher.findAndCountAll({limit: sizeNumber, offset: pageNumber*sizeNumber})
+        return res.status(200).json(publishers);
     }
 
     static async findPublisherById(id) {

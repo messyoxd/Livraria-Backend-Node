@@ -105,7 +105,25 @@ module.exports = class BookController {
     }
 
     static async getAllBooks(req, res) {
-        const books = await Book.findAll({ raw: true });
+
+        // validations
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        const {page, size} = req.query
+        const pageNumber = Number.parseInt(page)
+        const sizeNumber = Number.parseInt(size)
+
+        if(sizeNumber > 20)
+            return res.status(422).json({message: "Can only get as much as 20 entries!"})
+
+        const booksQuery = await Book.findAndCountAll({limit: sizeNumber, offset: pageNumber*sizeNumber})
+        
+        const books = booksQuery['rows']
+        // const books = await Book.findAll({ raw: true });
+
         let bookDtoList = [];
         let publisher;
         for (let index = 0; index < books.length; index++) {

@@ -34,7 +34,8 @@ const {
     dateValidation,
     editDateValidation,
     uintValidation,
-    editUintValidation
+    editUintValidation,
+    paginationValidation
 } = require(path.join(__dirname, "..", "helpers", "validators", "index.js"));
 
 
@@ -56,7 +57,7 @@ router.post(
 router.get("/:id", verifyToken, BookController.getBookById);
 
 // get all books
-router.get("/", verifyToken, BookController.getAllBooks);
+router.get("/", verifyToken, paginationValidation("page"), paginationValidation("size"), BookController.getAllBooks);
 
 // edit Book
 router.patch(

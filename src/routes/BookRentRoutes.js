@@ -33,7 +33,8 @@ const {
     editBasicValidation,
     dateValidation,
     editDateValidation,
-    uintValidation
+    uintValidation,
+    paginationValidation
 } = require(path.join(__dirname, "..", "helpers", "validators", "index.js"));
 
 // routes
@@ -52,7 +53,9 @@ router.post(
 router.get(
     "/rent/",
     verifyToken,
-    BookRentController.getAllBookRents
+    paginationValidation("page"),
+    paginationValidation("size"),
+    BookRentController.getAllRents
 );
 
 // get a book rent by id
@@ -66,6 +69,8 @@ router.get(
 router.get(
     "/rent/user/:userId",
     verifyToken,
+    paginationValidation("page"),
+    paginationValidation("size"),
     BookRentController.getAllUserRents
 );
 
@@ -73,6 +78,8 @@ router.get(
 router.get(
     "/rent/book/:bookId",
     verifyToken,
+    paginationValidation("page"),
+    paginationValidation("size"),
     BookRentController.getAllBookRents
 );
 
@@ -80,6 +87,8 @@ router.get(
 router.get(
     "/rent/user/:userId/book/:bookId",
     verifyToken,
+    paginationValidation("page"),
+    paginationValidation("size"),
     BookRentController.getBookRentByUserAndBookIds
 );
 

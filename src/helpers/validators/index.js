@@ -14,6 +14,7 @@ const editUintValidation = require(path.join(
     __dirname,
     "editUintValidation.js"
 ));
+const paginationValidation = require(path.join(__dirname, "paginationValidation.js"));
 
 module.exports = {
     basicValidation: basicValidation,
@@ -22,4 +23,5 @@ module.exports = {
     editDateValidation: editDateValidation,
     uintValidation: uintValidation,
     editUintValidation: editUintValidation,
+    paginationValidation: paginationValidation
 };
