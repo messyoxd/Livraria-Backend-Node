@@ -43,7 +43,7 @@ module.exports = class PublisherController {
                 .json({ message: "Nothing was sent to update!" });
 
         const id = req.params.id;
-        const publisher = PublisherController.findPublisherById(id);
+        const publisher = await PublisherController.findPublisherById(id);
         if (!publisher)
             return res.status(422).json({
                 message: `Publisher not found!`,
