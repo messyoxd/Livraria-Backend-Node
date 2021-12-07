@@ -32,7 +32,7 @@ const { createUserToken, getToken, getUserByToken } = require(path.join(
 
 module.exports = class UserController {
     static async findUserByEmail(email) {
-        return await User.findOne({ raw: true, email: email });
+        return await User.findOne({ raw: true, where: {email:email} });
     }
 
     static async findUserById(id) {
@@ -83,7 +83,7 @@ module.exports = class UserController {
         // check if sent email is already registered
         const email = req.body.email;
         if (email != undefined) {
-            const userExistsByEmail = findUserByEmail(req.body);
+            const userExistsByEmail = await UserController.findUserByEmail(req.body);
             if (!userExistsByEmail)
                 return res.status(422).json({
                     message: `User with email "${email}" is already registered!`,
