@@ -45,6 +45,7 @@ const {
 router.post(
     "/create",
     verifyToken,
+    checkIfUserIsAdmin,
     basicValidation("publisherId", 1),
     basicValidation("author"),
     basicValidation("title"),
@@ -54,15 +55,16 @@ router.post(
 );
 
 // get book by id
-router.get("/:id", verifyToken, BookController.getBookById);
+router.get("/:id", BookController.getBookById);
 
 // get all books
-router.get("/", verifyToken, paginationValidation("page"), paginationValidation("size"), BookController.getAllBooks);
+router.get("/", paginationValidation("page"), paginationValidation("size"), BookController.getAllBooks);
 
 // edit Book
 router.patch(
     "/edit/:id",
     verifyToken,
+    checkIfUserIsAdmin,
     editBasicValidation("publisherId", 1),
     editBasicValidation("author"),
     editBasicValidation("title"),
@@ -71,6 +73,6 @@ router.patch(
     BookController.editBook
 );
 // delete book
-router.delete("/delete/:id", verifyToken, BookController.deleteBookById);
+router.delete("/delete/:id", verifyToken, checkIfUserIsAdmin, BookController.deleteBookById);
 
 module.exports = router;

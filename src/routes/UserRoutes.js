@@ -85,7 +85,7 @@ router.post(
 // check user
 router.get("/check", verifyToken, UserController.checkUser);
 // get user by id
-router.get("/:id", verifyToken, UserController.getUserById);
+router.get("/:id", verifyToken, checkIfUserIsAdmin, UserController.getUserById);
 // update user
 router.patch(
     "/edit/",

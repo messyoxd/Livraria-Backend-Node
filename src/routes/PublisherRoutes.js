@@ -28,13 +28,11 @@ const { checkIfUserIsAdmin } = require(path.join(
 
 // validators
 const { check } = require("express-validator");
-const { basicValidation, editBasicValidation, paginationValidation } = require(path.join(
-    __dirname,
-    "..",
-    "helpers",
-    "validators",
-    "index.js"
-));
+const {
+    basicValidation,
+    editBasicValidation,
+    paginationValidation,
+} = require(path.join(__dirname, "..", "helpers", "validators", "index.js"));
 
 // routes
 
@@ -42,23 +40,37 @@ const { basicValidation, editBasicValidation, paginationValidation } = require(p
 router.post(
     "/create",
     verifyToken,
+    checkIfUserIsAdmin,
     basicValidation("name"),
     basicValidation("city"),
     PublisherController.createPublisher
 );
 
 // get publisher by id
-router.get("/:id", verifyToken, PublisherController.getPublisherByID);
+router.get(
+    "/:id",
+    verifyToken,
+    checkIfUserIsAdmin,
+    PublisherController.getPublisherByID
+);
 
 // get all publishers
-router.get("/", verifyToken, paginationValidation("page"), paginationValidation("size"), PublisherController.getAllPublishers);
+router.get(
+    "/",
+    verifyToken,
+    checkIfUserIsAdmin,
+    paginationValidation("page"),
+    paginationValidation("size"),
+    PublisherController.getAllPublishers
+);
 
 // edit publish
 router.patch(
     "/edit/:id",
     verifyToken,
+    checkIfUserIsAdmin,
     editBasicValidation("name", 3),
-    editBasicValidation('city', 3),
+    editBasicValidation("city", 3),
     PublisherController.editPublisher
 );
 
@@ -66,6 +78,7 @@ router.patch(
 router.delete(
     "/delete/:id",
     verifyToken,
+    checkIfUserIsAdmin,
     PublisherController.deletePublisherById
 );
 

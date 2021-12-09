@@ -53,6 +53,7 @@ router.post(
 router.get(
     "/rent/",
     verifyToken,
+    checkIfUserIsAdmin,
     paginationValidation("page"),
     paginationValidation("size"),
     BookRentController.getAllRents
@@ -62,6 +63,7 @@ router.get(
 router.get(
     "/rent/:id",
     verifyToken,
+    checkIfUserIsAdmin,
     BookRentController.getBookRentById
 );
 
@@ -69,6 +71,7 @@ router.get(
 router.get(
     "/rent/user/:userId",
     verifyToken,
+    checkIfUserIsAdmin,
     paginationValidation("page"),
     paginationValidation("size"),
     BookRentController.getAllUserRents
@@ -78,6 +81,7 @@ router.get(
 router.get(
     "/rent/book/:bookId",
     verifyToken,
+    checkIfUserIsAdmin,
     paginationValidation("page"),
     paginationValidation("size"),
     BookRentController.getAllBookRents
@@ -87,6 +91,7 @@ router.get(
 router.get(
     "/rent/user/:userId/book/:bookId",
     verifyToken,
+    checkIfUserIsAdmin,
     paginationValidation("page"),
     paginationValidation("size"),
     BookRentController.getBookRentByUserAndBookIds
@@ -103,6 +108,7 @@ router.patch(
 router.delete(
     "/rent/:id",
     verifyToken,
+    checkIfUserIsAdmin,
     BookRentController.deleteBookRent
 )
 
