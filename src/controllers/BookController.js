@@ -120,7 +120,6 @@ module.exports = class BookController {
             return res.status(422).json({message: "Can only get as much as 20 entries!"})
 
         const booksQuery = await Book.findAndCountAll({limit: sizeNumber, offset: pageNumber*sizeNumber})
-        
         const books = booksQuery['rows']
         // const books = await Book.findAll({ raw: true });
 
@@ -135,6 +134,7 @@ module.exports = class BookController {
         }
         return res.status(200).json(
             {
+                totalEntries: booksQuery['count'],
                 totalPages: Math.ceil(booksQuery['count'] / size),
                 content: bookDtoList
             });

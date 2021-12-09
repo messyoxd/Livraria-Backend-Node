@@ -109,6 +109,7 @@ module.exports = class BookRentController {
             bookRents
         );
         return res.status(200).json({
+            totalEntries: bookRentsQuery['count'],
             totalPages: Math.ceil(bookRentsQuery["count"] / size),
             content: bookRentsDto,
         });
@@ -146,6 +147,7 @@ module.exports = class BookRentController {
             bookRents
         );
         return res.status(200).json({
+            totalEntries: bookRentsQuery['count'],
             totalPages: Math.ceil(bookRentsQuery["count"] / size),
             content: bookRentsDto,
         });
@@ -183,6 +185,7 @@ module.exports = class BookRentController {
             userRents
         );
         return res.status(200).json({
+            totalEntries: userRentsQuery['count'],
             totalPages: Math.ceil(userRentsQuery["count"] / size),
             content: userRentsDto,
         });
@@ -260,6 +263,7 @@ module.exports = class BookRentController {
             bookRents
         );
         return res.status(200).json({
+            totalEntries: bookRentsQuery['count'],
             totalPages: Math.ceil(bookRentsQuery["count"] / size),
             content: bookRentsDto,
         });

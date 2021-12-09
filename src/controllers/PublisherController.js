@@ -82,6 +82,7 @@ module.exports = class PublisherController {
             offset: pageNumber * sizeNumber,
         });
         return res.status(200).json({
+            totalEntries: publishers['count'],
             totalPages: Math.ceil(publishers["count"] / size),
             content: publishers["rows"],
         });
