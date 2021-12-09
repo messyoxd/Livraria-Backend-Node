@@ -91,7 +91,7 @@ router.patch(
     "/edit/",
     verifyToken,
     check("email")
-        .if(check("email").exists())
+        .if(check("email").not().isEmpty())
         .isEmail()
         .withMessage("Must be a valid address!"),
     editPasswordValidation("password", 5, 50),
