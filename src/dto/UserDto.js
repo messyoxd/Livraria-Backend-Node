@@ -5,6 +5,7 @@ module.exports = class UserDto {
             name: user.name,
             email: user.email,
             phone: user.phone,
+            admin: user.admin,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt
         }
