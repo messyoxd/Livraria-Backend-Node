@@ -84,7 +84,7 @@ module.exports = class UserController {
         const email = req.body.email;
         if (email != undefined) {
             const userExistsByEmail = await UserController.findUserByEmail(email);
-            if (userExistsByEmail)
+            if (userExistsByEmail.email != user.email)
                 return res.status(422).json({
                     message: `User with email "${email}" is already registered!`,
                 });
